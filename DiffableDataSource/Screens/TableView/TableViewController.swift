@@ -49,6 +49,11 @@ final class TableViewController: UIViewController {
                 cell.textLabel?.text = country.name
                 return cell
         }
+        dataSource.defaultRowAnimation = .fade
+    }
+
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
         performSearch(searchQuery: nil)
     }
 

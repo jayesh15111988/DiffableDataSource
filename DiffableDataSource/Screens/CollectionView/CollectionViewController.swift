@@ -26,7 +26,7 @@ final class CollectionViewController: UIViewController {
                             "Algeria",
                             "Andorra",
                             "Angola",
-                            "Antigua and Barbuda",
+                            "Antigua and Barbuda and or and or",
                             "Argentina",
                             "Armenia",
                             "Australia",
@@ -53,6 +53,14 @@ final class CollectionViewController: UIViewController {
                 cell.widthConstraint.constant = (screenWidth/2.0) - (2 * 16.0)
                 return cell
         }
+
+        if let flowLayout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout {
+            flowLayout.estimatedItemSize = UICollectionViewFlowLayout.automaticSize
+        }
+    }
+
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
         performSearch(searchQuery: nil)
     }
 
