@@ -48,6 +48,7 @@ final class CollectionViewController: UIViewController {
                 guard let cell = collectionView.dequeueReusableCell(
                     withReuseIdentifier: "cell", for: indexPath) as? MyCellCollectionViewCell else {
                         fatalError("Cannot create new cell") }
+                cell.headerLabel.text = "Country"
                 cell.descriptionLabel.text = country.name
                 let screenWidth = collectionView.frame.size.width
                 cell.widthConstraint.constant = (screenWidth/2.0) - (2 * 16.0)

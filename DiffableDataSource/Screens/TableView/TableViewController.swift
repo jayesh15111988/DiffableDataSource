@@ -52,10 +52,10 @@ final class TableViewController: UIViewController {
         dataSource.defaultRowAnimation = .fade
     }
 
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        performSearch(searchQuery: nil)
-    }
+override func viewDidLayoutSubviews() {
+    super.viewDidLayoutSubviews()
+    performSearch(searchQuery: nil)
+}
 
     func performSearch(searchQuery: String?) {
         let filteredCountries: [Country]
