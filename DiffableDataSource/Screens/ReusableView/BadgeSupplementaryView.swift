@@ -30,17 +30,14 @@ class BadgeSupplementaryView: UICollectionReusableView {
         addSubview(label)
         NSLayoutConstraint.activate([
             label.centerXAnchor.constraint(equalTo: centerXAnchor),
-            label.centerYAnchor.constraint(equalTo: centerYAnchor),
-            label.heightAnchor.constraint(equalToConstant: 16.0),
-            label.widthAnchor.constraint(equalToConstant: 16.0)
+            label.centerYAnchor.constraint(equalTo: centerYAnchor)
             ])
         backgroundColor = .red
         label.textColor = .white
         label.textAlignment = .center
         label.font = UIFont.systemFont(ofSize: 11.0)
 
-        let radius: CGFloat = 10.0
-        layer.cornerRadius = radius
+        layer.cornerRadius = 10.0
         clipsToBounds = true
         layer.borderWidth = 1.0
         layer.borderColor = UIColor.black.cgColor

@@ -14,7 +14,7 @@ class SupplementaryHeaderView: UICollectionReusableView {
     let label: UILabel
 
     enum Constants {
-        static let padding: CGFloat = 20.0
+        static let padding: CGFloat = 10.0
     }
 
     override init(frame: CGRect) {
@@ -22,7 +22,6 @@ class SupplementaryHeaderView: UICollectionReusableView {
         super.init(frame: .zero)
         backgroundColor = .red
         label.numberOfLines = 0
-        label.backgroundColor = .blue
         addSubview(label)
         label.translatesAutoresizingMaskIntoConstraints = false
 

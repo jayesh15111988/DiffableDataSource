@@ -10,11 +10,24 @@ import UIKit
 
 final class CollectionViewController: UIViewController {
 
-    enum Section: CaseIterable {
+    enum Section: Int, CaseIterable {
         case main
         case header
         case body
         case innerBody
+
+        func columnCount() -> Int {
+            switch self {
+            case .main:
+                return 1
+            case .header:
+                return 3
+            case .body:
+                return 5
+            case .innerBody:
+                return 6
+            }
+        }
     }
 
     enum Constants {
@@ -23,31 +36,9 @@ final class CollectionViewController: UIViewController {
          static let footerElementKind = "footer-element-kind"
     }
 
-    enum SectionLayoutKind: Int {
-        case first
-        case second
-        case third
-        case fourth
-
-        func columnCount(width: CGFloat) -> Int {
-
-            let wideMode = width > 600.0
-            switch self {
-            case .first:
-                return wideMode ? 2: 1
-            case .second:
-                return wideMode ? 6 : 3
-            case .third:
-                return wideMode ? 10 : 5
-            case .fourth:
-                return 5
-            }
-        }
-    }
-
     @IBOutlet weak var collectionView: UICollectionView!
     var dataSource: UICollectionViewDiffableDataSource<Section, Int>!
-    var supplementaryDataSource: UICollectionViewDiffableDataSource<Section, Int>!
+
     var sequence: [Int] = []
     var sequenceHeader: [Int] = []
     var sequenceBody: [Int] = []
@@ -55,8 +46,8 @@ final class CollectionViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        collectionView.register(BadgeSupplementaryView.self, forSupplementaryViewOfKind: Constants.badgeElementKind, withReuseIdentifier: BadgeSupplementaryView.reuseIdentifier)
 
+        collectionView.register(BadgeSupplementaryView.self, forSupplementaryViewOfKind: Constants.badgeElementKind, withReuseIdentifier: BadgeSupplementaryView.reuseIdentifier)
         collectionView.register(SupplementaryHeaderView.self, forSupplementaryViewOfKind: Constants.headerElementKind, withReuseIdentifier: SupplementaryHeaderView.reuseIdentifier)
         collectionView.register(SupplementaryFooterView.self, forSupplementaryViewOfKind: Constants.footerElementKind, withReuseIdentifier: SupplementaryFooterView.reuseIdentifier)
 
@@ -92,14 +83,14 @@ final class CollectionViewController: UIViewController {
 
             if kind == Constants.headerElementKind {
                 if let headerView = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: SupplementaryHeaderView.reuseIdentifier, for: indexPath) as? SupplementaryHeaderView {
-                    headerView.label.text = "Header\nHeader\nHeader\nHeader\n"
+                    headerView.label.text = "Header\nHeader\nHeader\nHeader"
                     return headerView
                 }
             }
 
             if kind == Constants.footerElementKind {
                 if let footerView = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: SupplementaryFooterView.reuseIdentifier, for: indexPath) as? SupplementaryFooterView {
-                    footerView.label.text = "Footer\nFooter\nFooter\nFooter\n"
+                    footerView.label.text = "Footer\nFooter\nFooter\nFooter"
                     return footerView
                 }
             }
@@ -116,21 +107,15 @@ final class CollectionViewController: UIViewController {
             fatalError("Failed to get expected supplementary reusable view from collection view. Stopping the program execution")
         }
 
-        let layout = UICollectionViewFlowLayout()
-        layout.minimumInteritemSpacing = 8
-        layout.minimumLineSpacing = 8
-        layout.headerReferenceSize = .zero
-        layout.sectionInset = UIEdgeInsets(top: 8, left: 8, bottom: 8, right: 8)
-        //collectionView.collectionViewLayout = layout
         collectionView.collectionViewLayout = createLayout()
     }
 
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        performSearch(searchQuery: nil)
+        loadData()
     }
 
-    func performSearch(searchQuery: String?) {
+    func loadData() {
         let snapshot = NSDiffableDataSourceSnapshot<Section, Int>()
         snapshot.appendSections([.main, .header, .body, .innerBody])
         snapshot.appendItems(sequence, toSection: .main)
@@ -148,43 +133,13 @@ extension CollectionViewController: UICollectionViewDelegate {
     }
 }
 
-
-extension CollectionViewController: UISearchBarDelegate {
-    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        performSearch(searchQuery: searchText)
-    }
-}
-
-//extension CollectionViewController: UICollectionViewDelegateFlowLayout {
-//    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-//        return CGSize(width: self.view.frame.size.width - 16.0, height: 64)
-//    }
-//}
-
 extension CollectionViewController {
-//    private func createLayout() -> UICollectionViewLayout {
-//        let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .fractionalHeight(1.0))
-//        let item = NSCollectionLayoutItem(layoutSize: itemSize)
-//        item.contentInsets = NSDirectionalEdgeInsets(top: 5.0, leading: 0.0, bottom: 5.0, trailing: 0.0)
-//
-//        let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .absolute(74.0))
-//        //let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitems: [item])
-//        let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitem: item, count: 2)
-//        group.interItemSpacing = .fixed(10.0)
-//
-//        let section = NSCollectionLayoutSection(group: group)
-//        section.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 10.0, bottom: 0, trailing: 10.0)
-//
-//        let layout = UICollectionViewCompositionalLayout(section: section)
-//
-//        return layout
-//    }
 
     private func createLayout() -> UICollectionViewLayout {
         let layout = UICollectionViewCompositionalLayout { (sectionIndex: Int, layoutEnvironment: NSCollectionLayoutEnvironment) -> NSCollectionLayoutSection? in
 
-            guard let sectionLayoutKind = SectionLayoutKind(rawValue: sectionIndex) else { return nil }
-            let columns = sectionLayoutKind.columnCount(width: layoutEnvironment.container.effectiveContentSize.width)
+            guard let sectionKind = Section(rawValue: sectionIndex) else { return nil }
+            let columns = sectionKind.columnCount()
 
             let badgeAnchor = NSCollectionLayoutAnchor(edges: [.top, .trailing], fractionalOffset: CGPoint(x: 0.3, y: -0.3))
             let badgeSize = NSCollectionLayoutSize(widthDimension: .absolute(20.0), heightDimension: .absolute(20.0))
@@ -202,16 +157,16 @@ extension CollectionViewController {
 
             let header = NSCollectionLayoutBoundarySupplementaryItem(layoutSize: headerFooterSize, elementKind: Constants.headerElementKind, alignment: .top)
             header.pinToVisibleBounds = true
+            header.zIndex = 2
 
             let footer = NSCollectionLayoutBoundarySupplementaryItem(layoutSize: headerFooterSize, elementKind: Constants.footerElementKind, alignment: .bottom)
 
             let section = NSCollectionLayoutSection(group: group)
-            section.contentInsets = NSDirectionalEdgeInsets(top: 10.0, leading: 10.0, bottom: 10.0, trailing: 10.0)
             section.boundarySupplementaryItems = [header, footer]
+            section.contentInsets = NSDirectionalEdgeInsets(top: 10.0, leading: 10.0, bottom: 10.0, trailing: 10.0)
 
             return section
         }
-
         return layout
     }
 }

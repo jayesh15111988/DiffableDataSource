@@ -23,7 +23,6 @@ class SupplementaryFooterView: UICollectionReusableView {
         super.init(frame: .zero)
         backgroundColor = .purple
         label.numberOfLines = 0
-        label.backgroundColor = .red
         addSubview(label)
         label.translatesAutoresizingMaskIntoConstraints = false
 
