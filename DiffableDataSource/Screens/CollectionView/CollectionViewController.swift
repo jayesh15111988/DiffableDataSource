@@ -18,7 +18,6 @@ final class CollectionViewController: UIViewController {
         // Ref: https://www.cocoacontrols.com/search?q=collectionviewlayout part 1, 2 and 3
         case complex1
         case complex2
-        case complex3
     }
 
     enum Constants {
@@ -153,13 +152,13 @@ final class CollectionViewController: UIViewController {
     func performSearch(searchQuery: String?) {
         let snapshot = NSDiffableDataSourceSnapshot<Section, Int>()
         //snapshot.appendSections([.classicApple, .advanced313Vertical, .advanced313Horizontal, .imageSlider,.complex1, .complex2])
-        snapshot.appendSections([.classicApple, .advanced313Vertical, .advanced313Horizontal, .imageSlider, .complex1])
+        snapshot.appendSections([.classicApple, .advanced313Vertical, .advanced313Horizontal, .imageSlider, .complex1, .complex2])
         snapshot.appendItems(classicAppleSequence, toSection: .classicApple)
         snapshot.appendItems(advanced313VerticalSequence, toSection: .advanced313Vertical)
         snapshot.appendItems(advanced313HorizontalSequence, toSection: .advanced313Horizontal)
         snapshot.appendItems(imageSliderSequence, toSection: .imageSlider)
         snapshot.appendItems(complex1Sequence, toSection: .complex1)
-//        snapshot.appendItems(complex2Sequence, toSection: .complex2)
+        snapshot.appendItems(complex2Sequence, toSection: .complex2)
         dataSource.apply(snapshot, animatingDifferences: true)
     }
 }
@@ -331,9 +330,32 @@ extension CollectionViewController {
 
                 let leadingFullGroup = NSCollectionLayoutGroup.vertical(layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(0.5), heightDimension: .fractionalWidth(1.0)), subitems: [leadingTopItem, leadingMiddleGroup, leadingBottomGroup])
 
-                let nestedGroup = NSCollectionLayoutGroup.horizontal(layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(0.9), heightDimension: .fractionalHeight(0.7)), subitems: [leadingFullGroup, trailingFullGroup])
+                let nestedGroup = NSCollectionLayoutGroup.horizontal(layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(0.9), heightDimension: .fractionalWidth(0.9)), subitems: [leadingFullGroup, trailingFullGroup])
 
                 let section = NSCollectionLayoutSection(group: nestedGroup)
+                section.contentInsets = NSDirectionalEdgeInsets(top: 5.0, leading: 5.0, bottom: 5.0, trailing: 5.0)
+                section.orthogonalScrollingBehavior = .continuousGroupLeadingBoundary
+                return section
+            } else if sectionIndex == Section.complex2.rawValue {
+                let topLeadingElement = NSCollectionLayoutItem(layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(0.66), heightDimension: .fractionalHeight(1.0)))
+                topLeadingElement.contentInsets = NSDirectionalEdgeInsets(top: 5.0, leading: 5.0, bottom: 5.0, trailing: 5.0)
+                let topTrailingItem = NSCollectionLayoutItem(layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .fractionalHeight(0.5)))
+                topTrailingItem.contentInsets = NSDirectionalEdgeInsets(top: 5.0, leading: 5.0, bottom: 5.0, trailing: 5.0)
+                let topTrailingGroup = NSCollectionLayoutGroup.vertical(layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(0.33), heightDimension: .fractionalHeight(1.0)), subitem: topTrailingItem, count: 2)
+
+                let topNestedGroup = NSCollectionLayoutGroup.horizontal(layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(0.75), heightDimension: .fractionalHeight(0.5)), subitems: [topLeadingElement, topTrailingGroup])
+
+                let middleItem = NSCollectionLayoutItem(layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(0.33), heightDimension: .fractionalHeight(1.0)))
+                middleItem.contentInsets = NSDirectionalEdgeInsets(top: 5.0, leading: 5.0, bottom: 5.0, trailing: 5.0)
+                let middleGroup = NSCollectionLayoutGroup.horizontal(layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(0.75), heightDimension: .fractionalHeight(0.25)), subitems: [middleItem])
+
+                let lastItem = NSCollectionLayoutItem(layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(0.33), heightDimension: .fractionalHeight(1.0)))
+                lastItem.contentInsets = NSDirectionalEdgeInsets(top: 5.0, leading: 5.0, bottom: 5.0, trailing: 5.0)
+                let lastGroup = NSCollectionLayoutGroup.horizontal(layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(0.75), heightDimension: .fractionalHeight(0.25)), subitems: [lastItem])
+
+                let topTopNestedGroup = NSCollectionLayoutGroup.vertical(layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(0.9), heightDimension: .fractionalWidth(0.9)), subitems: [topNestedGroup, middleGroup, lastGroup])
+
+                let section = NSCollectionLayoutSection(group: topTopNestedGroup)
                 section.contentInsets = NSDirectionalEdgeInsets(top: 5.0, leading: 5.0, bottom: 5.0, trailing: 5.0)
                 section.orthogonalScrollingBehavior = .continuousGroupLeadingBoundary
                 return section
