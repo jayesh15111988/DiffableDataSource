@@ -10,21 +10,25 @@ import UIKit
 
 final class CollectionViewController: UIViewController {
 
-    enum Section: Int, CaseIterable {
-        case classicApple
-        case advanced313Vertical
-        case advanced313Horizontal
-        case imageSlider
-        // Ref: https://www.cocoacontrols.com/search?q=collectionviewlayout part 1, 2 and 3
-        case complex1
-        case complex2Imperfect
-        case complex2Perfect
+    enum AppSection: Int, CaseIterable {
+        case highlightedApps
+        case appsWeLove
+        case editorsChoice
+        case topFreeApps
+        case topPaidApps
+        case topCategories
+        case favoriteSubscriptions
+        case schoolEssentials
+        case backToSchoolShopping
+        case guidedMeditation
+        case sticker
+        case quickLinks
+        case termsAndConditions
     }
 
     enum Constants {
-         static let badgeElementKind = "badge-element-kind"
-         static let headerElementKind = "header-element-kind"
-         static let footerElementKind = "footer-element-kind"
+         static let mainHeaderElementKind = "main-header-element-kind"
+         static let subHeaderElementKind = "sub-header-element-kind"
     }
 
     enum SectionLayoutKind: Int {
@@ -50,87 +54,37 @@ final class CollectionViewController: UIViewController {
     }
 
     @IBOutlet weak var collectionView: UICollectionView!
-    var dataSource: UICollectionViewDiffableDataSource<Section, Int>!
-    var supplementaryDataSource: UICollectionViewDiffableDataSource<Section, Int>!
+    var dataSource: UICollectionViewDiffableDataSource<AppSection, NewUpdateCollectionViewCell.ViewModel>!
 
-    var classicAppleSequence: [Int] = []
-    var advanced313VerticalSequence: [Int] = []
-    var advanced313HorizontalSequence: [Int] = []
-    var imageSliderSequence: [Int] = []
-    var complex1Sequence: [Int] = []
-    var complex2ImperfectSequence: [Int] = []
-    var complex2PerfectSequence: [Int] = []
+    let newUpdatesViewModelsCollection = [
+        NewUpdateCollectionViewCell.ViewModel(topTitle: "top title 1", middleTitle: "middle title 1", bottomTitle: "bottom title", image: UIImage(named: "add-to-cart-drawer-check")!),
+        NewUpdateCollectionViewCell.ViewModel(topTitle: "top title 2", middleTitle: "middle title", bottomTitle: "bottom title", image: UIImage(named: "add-to-cart-drawer-check")!),
+        NewUpdateCollectionViewCell.ViewModel(topTitle: "top title 3", middleTitle: "middle title", bottomTitle: "bottom title", image: UIImage(named: "add-to-cart-drawer-check")!),
+        NewUpdateCollectionViewCell.ViewModel(topTitle: "top title 4", middleTitle: "middle title", bottomTitle: "bottom title", image: UIImage(named: "add-to-cart-drawer-check")!)]
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        collectionView.register(BadgeSupplementaryView.self, forSupplementaryViewOfKind: Constants.badgeElementKind, withReuseIdentifier: BadgeSupplementaryView.reuseIdentifier)
 
-        collectionView.register(SupplementaryHeaderView.self, forSupplementaryViewOfKind: Constants.headerElementKind, withReuseIdentifier: SupplementaryHeaderView.reuseIdentifier)
-        collectionView.register(SupplementaryFooterView.self, forSupplementaryViewOfKind: Constants.footerElementKind, withReuseIdentifier: SupplementaryFooterView.reuseIdentifier)
-
-        for i in 1...20 {
-            classicAppleSequence.append(i)
-        }
-
-        for i in 21...40 {
-            advanced313VerticalSequence.append(i)
-        }
-
-        for i in 41...60 {
-            advanced313HorizontalSequence.append(i)
-        }
-
-        for i in 61...80 {
-            imageSliderSequence.append(i)
-        }
-
-        for i in 81...100 {
-            complex1Sequence.append(i)
-        }
-
-        for i in 101...120 {
-            complex2ImperfectSequence.append(i)
-        }
-
-        for i in 121...140 {
-            complex2PerfectSequence.append(i)
-        }
+        collectionView.register(NewUpdateCollectionViewCell.self, forCellWithReuseIdentifier: NewUpdateCollectionViewCell.reuseIdentifier)
+        collectionView.register(MainHeaderView.self, forSupplementaryViewOfKind: Constants.mainHeaderElementKind, withReuseIdentifier: MainHeaderView.reuseIdentifier)
+        collectionView.register(SubHeaderView.self, forSupplementaryViewOfKind: Constants.subHeaderElementKind, withReuseIdentifier: SubHeaderView.reuseIdentifier)
 
         dataSource = UICollectionViewDiffableDataSource
-            <Section, Int>(collectionView: collectionView) {
-                (collectionView: UICollectionView, indexPath: IndexPath,
-                number: Int) -> UICollectionViewCell? in
+            <AppSection, NewUpdateCollectionViewCell.ViewModel>(collectionView: collectionView) {
+                (collectionView: UICollectionView, indexPath: IndexPath, viewModel: NewUpdateCollectionViewCell.ViewModel) -> UICollectionViewCell? in
                 guard let cell = collectionView.dequeueReusableCell(
-                    withReuseIdentifier: "cell", for: indexPath) as? MyCellCollectionViewCell else {
+                    withReuseIdentifier: NewUpdateCollectionViewCell.reuseIdentifier, for: indexPath) as? NewUpdateCollectionViewCell else {
                         fatalError("Cannot create new cell") }
-                cell.headerLabel.text = nil
-                cell.descriptionLabel.text = "\(number)"
+
+                cell.apply(viewModel: viewModel)
                 return cell
         }
 
         dataSource.supplementaryViewProvider = { [weak self] (collectionView: UICollectionView, kind: String, indexPath: IndexPath) -> UICollectionReusableView? in
 
-            if kind == Constants.headerElementKind {
-                if let headerView = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: SupplementaryHeaderView.reuseIdentifier, for: indexPath) as? SupplementaryHeaderView {
-                    headerView.label.text = "Header\nHeader\nHeader\nHeader\n"
-                    return headerView
-                }
-            }
-
-            if kind == Constants.footerElementKind {
-                if let footerView = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: SupplementaryFooterView.reuseIdentifier, for: indexPath) as? SupplementaryFooterView {
-                    footerView.label.text = "Footer\nFooter\nFooter\nFooter\n"
-                    return footerView
-                }
-            }
-
-            guard let strongSelf = self, let sequence = strongSelf.dataSource.itemIdentifier(for: indexPath) else { return nil }
-            if let badgeView = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: BadgeSupplementaryView.reuseIdentifier, for: indexPath) as? BadgeSupplementaryView {
-
-                let badgeCount = sequence
-                badgeView.label.text = "\(badgeCount)"
-                badgeView.isHidden = false
-                return badgeView
+            if let headerView = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: MainHeaderView.reuseIdentifier, for: indexPath) as? MainHeaderView {
+                headerView.label.text = "Header\nHeader\nHeader\nHeader\n"
+                return headerView
             }
 
             fatalError("Failed to get expected supplementary reusable view from collection view. Stopping the program execution")
@@ -151,16 +105,16 @@ final class CollectionViewController: UIViewController {
     }
 
     func performSearch(searchQuery: String?) {
-        let snapshot = NSDiffableDataSourceSnapshot<Section, Int>()
-        //snapshot.appendSections([.classicApple, .advanced313Vertical, .advanced313Horizontal, .imageSlider,.complex1, .complex2])
-        snapshot.appendSections([.classicApple, .advanced313Vertical, .advanced313Horizontal, .imageSlider, .complex1, .complex2Imperfect, .complex2Perfect])
-        snapshot.appendItems(classicAppleSequence, toSection: .classicApple)
-        snapshot.appendItems(advanced313VerticalSequence, toSection: .advanced313Vertical)
-        snapshot.appendItems(advanced313HorizontalSequence, toSection: .advanced313Horizontal)
-        snapshot.appendItems(imageSliderSequence, toSection: .imageSlider)
-        snapshot.appendItems(complex1Sequence, toSection: .complex1)
-        snapshot.appendItems(complex2ImperfectSequence, toSection: .complex2Imperfect)
-        snapshot.appendItems(complex2PerfectSequence, toSection: .complex2Perfect)
+        let snapshot = NSDiffableDataSourceSnapshot<AppSection, NewUpdateCollectionViewCell.ViewModel>()
+        snapshot.appendSections([.highlightedApps])
+        snapshot.appendItems(newUpdatesViewModelsCollection, toSection: .highlightedApps)
+//        snapshot.appendItems(classicAppleSequence, toSection: .classicApple)
+//        snapshot.appendItems(advanced313VerticalSequence, toSection: .advanced313Vertical)
+//        snapshot.appendItems(advanced313HorizontalSequence, toSection: .advanced313Horizontal)
+//        snapshot.appendItems(imageSliderSequence, toSection: .imageSlider)
+//        snapshot.appendItems(complex1Sequence, toSection: .complex1)
+//        snapshot.appendItems(complex2ImperfectSequence, toSection: .complex2Imperfect)
+//        snapshot.appendItems(complex2PerfectSequence, toSection: .complex2Perfect)
         dataSource.apply(snapshot, animatingDifferences: true)
     }
 }
@@ -242,158 +196,16 @@ extension CollectionViewController {
     private func createLayout() -> UICollectionViewLayout {
         let layout = UICollectionViewCompositionalLayout { (sectionIndex: Int, layoutEnvironment: NSCollectionLayoutEnvironment) -> NSCollectionLayoutSection? in
 
-            if sectionIndex == Section.classicApple.rawValue {
-                let leadingItem = NSCollectionLayoutItem(layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(0.7), heightDimension: .fractionalHeight(1.0)))
-                leadingItem.contentInsets = NSDirectionalEdgeInsets(top: 5.0, leading: 5.0, bottom: 5.0, trailing: 5.0)
+            let item = NSCollectionLayoutItem(layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(0.5), heightDimension: .fractionalHeight(1.0)))
+            item.contentInsets = NSDirectionalEdgeInsets(top: 5.0, leading: 5.0, bottom: 5.0, trailing: 5.0)
 
-                let trailingItem = NSCollectionLayoutItem(layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .fractionalHeight(0.5)))
-                trailingItem.contentInsets = NSDirectionalEdgeInsets(top: 5.0, leading: 5.0, bottom: 5.0, trailing: 5.0)
+            let group = NSCollectionLayoutGroup.horizontal(layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(0.95), heightDimension: .absolute(300)), subitems: [item])
 
-                let trailingGroup = NSCollectionLayoutGroup.vertical(layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(0.3), heightDimension: .fractionalHeight(1.0)), subitem: trailingItem, count: 2)
+            let section = NSCollectionLayoutSection(group: group)
+            section.contentInsets = NSDirectionalEdgeInsets(top: 5.0, leading: 5.0, bottom: 5.0, trailing: 5.0)
+            section.orthogonalScrollingBehavior = .groupPaging
 
-                let nestedGroup = NSCollectionLayoutGroup.horizontal(layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(0.85), heightDimension: .fractionalHeight(0.4)), subitems: [leadingItem, trailingGroup])
-
-                let section = NSCollectionLayoutSection(group: nestedGroup)
-                section.contentInsets = NSDirectionalEdgeInsets(top: 5.0, leading: 5.0, bottom: 5.0, trailing: 5.0)
-                section.orthogonalScrollingBehavior = .continuousGroupLeadingBoundary
-
-                return section
-            } else if sectionIndex == Section.advanced313Vertical.rawValue {
-                let leadingItem = NSCollectionLayoutItem(layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .fractionalHeight(0.3)))
-                leadingItem.contentInsets = NSDirectionalEdgeInsets(top: 5.0, leading: 5.0, bottom: 5.0, trailing: 5.0)
-                let leadingGroup = NSCollectionLayoutGroup.vertical(layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(0.33), heightDimension: .fractionalHeight(1.0)), subitem: leadingItem, count: 3)
-
-                let middleItem = NSCollectionLayoutItem(layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(0.33), heightDimension: .fractionalHeight(1.0)))
-                middleItem.contentInsets = NSDirectionalEdgeInsets(top: 5.0, leading: 5.0, bottom: 5.0, trailing: 5.0)
-
-                let trailingItem = NSCollectionLayoutItem(layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .fractionalHeight(0.3)))
-                trailingItem.contentInsets = NSDirectionalEdgeInsets(top: 5.0, leading: 5.0, bottom: 5.0, trailing: 5.0)
-                let trailingGroup = NSCollectionLayoutGroup.vertical(layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(0.33), heightDimension: .fractionalHeight(1.0)), subitem: trailingItem, count: 3)
-
-                let nestedGroup = NSCollectionLayoutGroup.horizontal(layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(0.85), heightDimension: .fractionalHeight(0.5)), subitems: [leadingGroup, middleItem, trailingGroup])
-
-                let section = NSCollectionLayoutSection(group: nestedGroup)
-                section.contentInsets = NSDirectionalEdgeInsets(top: 5.0, leading: 5.0, bottom: 5.0, trailing: 5.0)
-                section.orthogonalScrollingBehavior = .continuousGroupLeadingBoundary
-
-                return section
-            } else if sectionIndex == Section.advanced313Horizontal.rawValue {
-                let leadingItem = NSCollectionLayoutItem(layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(0.33), heightDimension: .fractionalHeight(1.0)))
-                leadingItem.contentInsets = NSDirectionalEdgeInsets(top: 5.0, leading: 5.0, bottom: 5.0, trailing: 5.0)
-                let leadingGroup = NSCollectionLayoutGroup.horizontal(layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .fractionalHeight(0.33)), subitem: leadingItem, count: 3)
-
-                let middleItem = NSCollectionLayoutItem(layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .fractionalHeight(0.33)))
-                middleItem.contentInsets = NSDirectionalEdgeInsets(top: 5.0, leading: 5.0, bottom: 5.0, trailing: 5.0)
-
-                let trailingItem = NSCollectionLayoutItem(layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(0.33), heightDimension: .fractionalHeight(1.0)))
-                trailingItem.contentInsets = NSDirectionalEdgeInsets(top: 5.0, leading: 5.0, bottom: 5.0, trailing: 5.0)
-                let trailingGroup = NSCollectionLayoutGroup.horizontal(layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .fractionalHeight(0.33)), subitem: trailingItem, count: 3)
-
-                let nestedGroup = NSCollectionLayoutGroup.vertical(layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(0.85), heightDimension: .fractionalHeight(0.5)), subitems: [leadingGroup, middleItem, trailingGroup])
-
-                let section = NSCollectionLayoutSection(group: nestedGroup)
-                section.contentInsets = NSDirectionalEdgeInsets(top: 5.0, leading: 5.0, bottom: 5.0, trailing: 5.0)
-                section.orthogonalScrollingBehavior = .continuousGroupLeadingBoundary
-
-                return section
-            } else if sectionIndex == Section.imageSlider.rawValue {
-                let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .fractionalHeight(1.0))
-                let item = NSCollectionLayoutItem(layoutSize: itemSize)
-                item.contentInsets = NSDirectionalEdgeInsets(top: 5.0, leading: 5.0, bottom: 5.0, trailing: 15.0)
-
-                let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .absolute(150.0))
-                let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitems: [item])
-
-                let section = NSCollectionLayoutSection(group: group)
-                section.contentInsets = NSDirectionalEdgeInsets(top: 5.0, leading: 5.0, bottom: 5.0, trailing: 5.0)
-
-                section.orthogonalScrollingBehavior = .paging
-                return section
-            } else if sectionIndex == Section.complex1.rawValue {
-
-                // Top item
-                let leadingTopItem = NSCollectionLayoutItem(layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .fractionalHeight(0.5)))
-                leadingTopItem.contentInsets = NSDirectionalEdgeInsets(top: 5.0, leading: 5.0, bottom: 5.0, trailing: 5.0)
-
-                // Middle
-                let leadingMiddleItem = NSCollectionLayoutItem(layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(0.5), heightDimension: .fractionalHeight(1.0)))
-                leadingMiddleItem.contentInsets = NSDirectionalEdgeInsets(top: 5.0, leading: 5.0, bottom: 5.0, trailing: 5.0)
-                let leadingMiddleGroup = NSCollectionLayoutGroup.horizontal(layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .fractionalHeight(0.25)), subitem: leadingMiddleItem, count: 2)
-
-                // Bottom
-                let leadingBottomItem = NSCollectionLayoutItem(layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(0.5), heightDimension: .fractionalHeight(1.0)))
-                leadingBottomItem.contentInsets = NSDirectionalEdgeInsets(top: 5.0, leading: 5.0, bottom: 5.0, trailing: 5.0)
-                let leadingBottomGroup = NSCollectionLayoutGroup.horizontal(layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .fractionalHeight(0.25)), subitem: leadingBottomItem, count: 2)
-
-                let trailingBottomItem = NSCollectionLayoutItem(layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .fractionalHeight(0.5)))
-                trailingBottomItem.contentInsets = NSDirectionalEdgeInsets(top: 5.0, leading: 5.0, bottom: 5.0, trailing: 5.0)
-
-                let trailingFullGroup = NSCollectionLayoutGroup.vertical(layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(0.5), heightDimension: .fractionalWidth(1.0)), subitems: [leadingMiddleGroup, leadingBottomGroup, trailingBottomItem])
-
-                let leadingFullGroup = NSCollectionLayoutGroup.vertical(layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(0.5), heightDimension: .fractionalWidth(1.0)), subitems: [leadingTopItem, leadingMiddleGroup, leadingBottomGroup])
-
-                let nestedGroup = NSCollectionLayoutGroup.horizontal(layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(0.9), heightDimension: .fractionalWidth(0.9)), subitems: [leadingFullGroup, trailingFullGroup])
-
-                let section = NSCollectionLayoutSection(group: nestedGroup)
-                section.contentInsets = NSDirectionalEdgeInsets(top: 5.0, leading: 5.0, bottom: 5.0, trailing: 5.0)
-                section.orthogonalScrollingBehavior = .continuousGroupLeadingBoundary
-                return section
-            } else if sectionIndex == Section.complex2Imperfect.rawValue {
-                let topLeadingElement = NSCollectionLayoutItem(layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(0.67), heightDimension: .fractionalHeight(1.0)))
-                topLeadingElement.contentInsets = NSDirectionalEdgeInsets(top: 5.0, leading: 5.0, bottom: 5.0, trailing: 5.0)
-                let topTrailingItem = NSCollectionLayoutItem(layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .fractionalHeight(0.5)))
-                topTrailingItem.contentInsets = NSDirectionalEdgeInsets(top: 5.0, leading: 5.0, bottom: 5.0, trailing: 5.0)
-                let topTrailingGroup = NSCollectionLayoutGroup.vertical(layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(0.33), heightDimension: .fractionalHeight(1.0)), subitems: [topTrailingItem])
-
-                let topNestedGroup = NSCollectionLayoutGroup.horizontal(layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .fractionalWidth(0.67)), subitems: [topLeadingElement, topTrailingGroup])
-
-                let middleItem = NSCollectionLayoutItem(layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(0.33), heightDimension: .fractionalHeight(1.0)))
-                middleItem.contentInsets = NSDirectionalEdgeInsets(top: 5.0, leading: 5.0, bottom: 5.0, trailing: 5.0)
-                let middleGroup = NSCollectionLayoutGroup.horizontal(layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .fractionalWidth(0.33)), subitems: [middleItem])
-
-                let lastItem = NSCollectionLayoutItem(layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(0.33), heightDimension: .fractionalHeight(1.0)))
-                lastItem.contentInsets = NSDirectionalEdgeInsets(top: 5.0, leading: 5.0, bottom: 5.0, trailing: 5.0)
-                let lastGroup = NSCollectionLayoutGroup.horizontal(layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .fractionalWidth(0.33)), subitems: [lastItem])
-
-                let bottomNestedGroup = NSCollectionLayoutGroup.vertical(layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .fractionalHeight(0.5)), subitems: [middleGroup, lastGroup])
-
-                let finalParentGroup = NSCollectionLayoutGroup.vertical(layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(0.9), heightDimension: .fractionalWidth(1.206)), subitems: [topNestedGroup, bottomNestedGroup])
-
-                let section = NSCollectionLayoutSection(group: finalParentGroup)
-                section.contentInsets = NSDirectionalEdgeInsets(top: 5.0, leading: 5.0, bottom: 5.0, trailing: 5.0)
-                section.orthogonalScrollingBehavior = .continuousGroupLeadingBoundary
-                return section
-            } else if sectionIndex == Section.complex2Perfect.rawValue {
-                // Complex 2 perfect
-
-
-                let topLeadingElement = NSCollectionLayoutItem(layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .fractionalWidth(1.0)))
-                topLeadingElement.contentInsets = NSDirectionalEdgeInsets(top: 5.0, leading: 5.0, bottom: 5.0, trailing: 5.0)
-
-                let topLeftItem = NSCollectionLayoutItem(layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .fractionalHeight(1.0)))
-                topLeftItem.contentInsets = NSDirectionalEdgeInsets(top: 5.0, leading: 5.0, bottom: 5.0, trailing: 5.0)
-                let topLeftGroup = NSCollectionLayoutGroup.horizontal(layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .fractionalWidth(0.5)), subitem: topLeftItem, count: 2)
-
-                let bottomLeftItem = NSCollectionLayoutItem(layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .fractionalHeight(1.0)))
-                bottomLeftItem.contentInsets = NSDirectionalEdgeInsets(top: 5.0, leading: 5.0, bottom: 5.0, trailing: 5.0)
-                let bottomLeftGroup = NSCollectionLayoutGroup.horizontal(layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .fractionalWidth(0.5)), subitem: bottomLeftItem, count: 2)
-
-                let leftNestedGroup = NSCollectionLayoutGroup.vertical(layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(0.67), heightDimension: .fractionalHeight(1.0)), subitems: [topLeadingElement, topLeftGroup, bottomLeftGroup])
-
-                let rightItem = NSCollectionLayoutItem(layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .fractionalHeight(0.25)))
-                rightItem.contentInsets = NSDirectionalEdgeInsets(top: 5.0, leading: 5.0, bottom: 5.0, trailing: 5.0)
-                let rightGroup = NSCollectionLayoutGroup.vertical(layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(0.33), heightDimension: .fractionalHeight(1.0)), subitems: [rightItem])
-
-                // 0.603+0.603 = 1.206 total height of the container view
-                let topNestedGroup = NSCollectionLayoutGroup.horizontal(layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(0.9), heightDimension: .fractionalWidth(1.206)), subitems: [leftNestedGroup, rightGroup])
-
-                let section = NSCollectionLayoutSection(group: topNestedGroup)
-                section.contentInsets = NSDirectionalEdgeInsets(top: 5.0, leading: 5.0, bottom: 5.0, trailing: 5.0)
-                section.orthogonalScrollingBehavior = .continuousGroupLeadingBoundary
-                return section
-            }
-
-            fatalError()
+            return section
         }
         return layout
     }
