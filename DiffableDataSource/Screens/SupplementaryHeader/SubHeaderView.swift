@@ -13,7 +13,7 @@ class SubHeaderView: UICollectionReusableView {
     struct ViewModel {
         let labelTitle: String
         let buttonTitle: String
-        let attachmentImage: UIImage
+        let attachmentImage: UIImage?
     }
 
     enum Constants {
@@ -32,6 +32,8 @@ class SubHeaderView: UICollectionReusableView {
 
         super.init(frame: .zero)
         label.numberOfLines = 0
+        label.font = UIFont.boldSystemFont(ofSize: 26.0)
+        button.setTitleColor(UIColor.systemBlue, for: .normal)
         addSubview(label)
         addSubview(button)
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -48,9 +50,21 @@ class SubHeaderView: UICollectionReusableView {
             ])
     }
 
-    func apply(viewModel: MainHeaderView.ViewModel) {
-        label.text = viewModel.title
-        button.setTitle(viewModel.title, for: .normal)
+    func apply(viewModel: SubHeaderView.ViewModel) {
+
+        let labelTitle = viewModel.attachmentImage != nil ? viewModel.labelTitle + "  " : viewModel.labelTitle
+
+        let fullAttributedString = NSMutableAttributedString(string: labelTitle)
+
+        if let attachmentImage = viewModel.attachmentImage {
+            let attachment = NSTextAttachment()
+            attachment.image = attachmentImage
+            let imagedAttributedString = NSAttributedString(attachment: attachment)
+            fullAttributedString.append(imagedAttributedString)
+        }
+
+        label.attributedText = fullAttributedString
+        button.setTitle(viewModel.buttonTitle, for: .normal)
     }
 
     required init?(coder: NSCoder) {

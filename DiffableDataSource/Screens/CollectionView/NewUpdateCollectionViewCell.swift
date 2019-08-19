@@ -14,7 +14,7 @@ final class NewUpdateCollectionViewCell: UICollectionViewCell {
         let topTitle: String
         let middleTitle: String
         let bottomTitle: String
-        let image: UIImage
+        let image: UIImage?
     }
 
     static let reuseIdentifier = "new-update-reusable-cell"
@@ -53,7 +53,7 @@ final class NewUpdateCollectionViewCell: UICollectionViewCell {
     override init(frame: CGRect) {
         super.init(frame: .zero)
         backgroundColor = .red
-        //setupViews()
+        setupViews()
 
     }
 

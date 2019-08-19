@@ -13,6 +13,7 @@ class MainHeaderView: UICollectionReusableView {
     struct ViewModel {
         let title: String
         let image: UIImage
+        let tintColor: UIColor
     }
 
     static let reuseIdentifier = "main-header-reusable-view"
@@ -21,6 +22,7 @@ class MainHeaderView: UICollectionReusableView {
 
     override init(frame: CGRect) {
         label = UILabel()
+        label.font = UIFont.boldSystemFont(ofSize: 38.0)
         imageView = UIImageView()
         super.init(frame: .zero)
         addSubview(label)
@@ -32,17 +34,18 @@ class MainHeaderView: UICollectionReusableView {
             label.leadingAnchor.constraint(equalTo: leadingAnchor, constant: Constants.horizontalPadding),
             label.topAnchor.constraint(equalTo: topAnchor, constant: Constants.verticalPadding),
             label.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -Constants.verticalPadding),
-            label.trailingAnchor.constraint(equalTo: imageView.leadingAnchor, constant: -Constants.horizontalPadding),
+            label.trailingAnchor.constraint(lessThanOrEqualTo: imageView.leadingAnchor, constant: -Constants.horizontalPadding),
             imageView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -Constants.horizontalPadding),
-            imageView.topAnchor.constraint(equalTo: topAnchor, constant: Constants.verticalPadding),
-            imageView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -Constants.verticalPadding),
-            imageView.heightAnchor.constraint(equalToConstant: Constants.profileImageSize)
+            imageView.centerYAnchor.constraint(equalTo: centerYAnchor),
+            imageView.heightAnchor.constraint(equalToConstant: Constants.profileImageSize),
+            imageView.widthAnchor.constraint(equalToConstant: Constants.profileImageSize)
             ])
     }
 
     func apply(viewModel: MainHeaderView.ViewModel) {
         label.text = viewModel.title
         imageView.image = viewModel.image
+        imageView.tintColor = viewModel.tintColor
     }
 
     required init?(coder: NSCoder) {

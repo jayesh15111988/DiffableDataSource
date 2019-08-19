@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14810.11" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="6v2-tY-Ega">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14810.11" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="0Uh-11-It9">
     <device id="retina4_7" orientation="portrait" appearance="light"/>
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14766.13"/>
@@ -121,15 +121,8 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <searchBar contentMode="redraw" translatesAutoresizingMaskIntoConstraints="NO" id="a9B-33-dhX">
-                                <rect key="frame" x="0.0" y="44" width="375" height="56"/>
-                                <textInputTraits key="textInputTraits"/>
-                                <connections>
-                                    <outlet property="delegate" destination="6v2-tY-Ega" id="Yzc-kI-Y8i"/>
-                                </connections>
-                            </searchBar>
                             <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="LA6-GX-MsW">
-                                <rect key="frame" x="0.0" y="100" width="375" height="567"/>
+                                <rect key="frame" x="0.0" y="44" width="375" height="623"/>
                                 <color key="backgroundColor" xcode11CocoaTouchSystemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                                 <collectionViewFlowLayout key="collectionViewLayout" automaticEstimatedItemSize="YES" minimumLineSpacing="5" minimumInteritemSpacing="5" id="UVh-JA-YDL">
                                     <size key="itemSize" width="165" height="130"/>
@@ -201,15 +194,13 @@
                         <color key="backgroundColor" xcode11CocoaTouchSystemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                         <constraints>
                             <constraint firstItem="LA6-GX-MsW" firstAttribute="bottom" secondItem="lQN-zd-MYv" secondAttribute="bottom" id="Cxm-m0-p8e"/>
-                            <constraint firstItem="a9B-33-dhX" firstAttribute="trailing" secondItem="lQN-zd-MYv" secondAttribute="trailing" id="LnS-5k-OGX"/>
+                            <constraint firstItem="LA6-GX-MsW" firstAttribute="top" secondItem="lQN-zd-MYv" secondAttribute="top" id="OzI-02-lQP"/>
                             <constraint firstItem="LA6-GX-MsW" firstAttribute="trailing" secondItem="lQN-zd-MYv" secondAttribute="trailing" id="PAV-xr-n9Q"/>
-                            <constraint firstItem="a9B-33-dhX" firstAttribute="top" secondItem="lQN-zd-MYv" secondAttribute="top" id="bhs-We-T6q"/>
-                            <constraint firstItem="a9B-33-dhX" firstAttribute="leading" secondItem="lQN-zd-MYv" secondAttribute="leading" id="gAW-1d-iyY"/>
                             <constraint firstItem="LA6-GX-MsW" firstAttribute="leading" secondItem="lQN-zd-MYv" secondAttribute="leading" id="gib-A0-Foq"/>
-                            <constraint firstItem="LA6-GX-MsW" firstAttribute="top" secondItem="a9B-33-dhX" secondAttribute="bottom" id="mMj-RL-85S"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="lQN-zd-MYv"/>
                     </view>
+                    <navigationItem key="navigationItem" id="Zpb-SA-tEw"/>
                     <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" prompted="NO"/>
                     <connections>
                         <outlet property="collectionView" destination="LA6-GX-MsW" id="Dvc-5p-nVr"/>
@@ -217,7 +208,26 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="UWr-eL-rmm" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="591" y="464"/>
+            <point key="canvasLocation" x="589.60000000000002" y="463.71814092953525"/>
+        </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="UVi-xf-c9s">
+            <objects>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="WEP-Eu-Nev" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+                <navigationController id="0Uh-11-It9" sceneMemberID="viewController">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="JVZ-DS-Fad">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <connections>
+                        <segue destination="6v2-tY-Ega" kind="relationship" relationship="rootViewController" id="ei2-Yp-4Cd"/>
+                    </connections>
+                </navigationController>
+            </objects>
+            <point key="canvasLocation" x="1369" y="421"/>
         </scene>
     </scenes>
+    <inferredMetricsTieBreakers>
+        <segue reference="ei2-Yp-4Cd"/>
+    </inferredMetricsTieBreakers>
 </document>
