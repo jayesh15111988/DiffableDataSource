@@ -188,65 +188,7 @@ extension CollectionViewController: UICollectionViewDelegate {
     }
 }
 
-//extension CollectionViewController: UICollectionViewDelegateFlowLayout {
-//    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-//        return CGSize(width: self.view.frame.size.width - 16.0, height: 64)
-//    }
-//}
-
 extension CollectionViewController {
-//    private func createLayout() -> UICollectionViewLayout {
-//        let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .fractionalHeight(1.0))
-//        let item = NSCollectionLayoutItem(layoutSize: itemSize)
-//        item.contentInsets = NSDirectionalEdgeInsets(top: 5.0, leading: 0.0, bottom: 5.0, trailing: 0.0)
-//
-//        let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .absolute(74.0))
-//        //let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitems: [item])
-//        let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitem: item, count: 2)
-//        group.interItemSpacing = .fixed(10.0)
-//
-//        let section = NSCollectionLayoutSection(group: group)
-//        section.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 10.0, bottom: 0, trailing: 10.0)
-//
-//        let layout = UICollectionViewCompositionalLayout(section: section)
-//
-//        return layout
-//    }
-
-//    private func createLayout() -> UICollectionViewLayout {
-//        let layout = UICollectionViewCompositionalLayout { (sectionIndex: Int, layoutEnvironment: NSCollectionLayoutEnvironment) -> NSCollectionLayoutSection? in
-//
-//            guard let sectionLayoutKind = SectionLayoutKind(rawValue: sectionIndex) else { return nil }
-//            let columns = sectionLayoutKind.columnCount(width: layoutEnvironment.container.effectiveContentSize.width)
-//
-//            let badgeAnchor = NSCollectionLayoutAnchor(edges: [.top, .trailing], fractionalOffset: CGPoint(x: 0.3, y: -0.3))
-//            let badgeSize = NSCollectionLayoutSize(widthDimension: .absolute(20.0), heightDimension: .absolute(20.0))
-//            let badge = NSCollectionLayoutSupplementaryItem(layoutSize: badgeSize, elementKind: Constants.badgeElementKind, containerAnchor: badgeAnchor)
-//
-//            let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .fractionalHeight(1.0))
-//            let item = NSCollectionLayoutItem(layoutSize: itemSize, supplementaryItems: [badge])
-//            item.contentInsets = NSDirectionalEdgeInsets(top: 2.0, leading: 2.0, bottom: 2.0, trailing: 2.0)
-//
-//            let groupHeight: NSCollectionLayoutDimension = columns == 1 ? .absolute(74) : .fractionalWidth(0.2)
-//            let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: groupHeight)
-//            let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitem: item, count: columns)
-//
-//            let headerFooterSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .estimated(44.0))
-//
-//            let header = NSCollectionLayoutBoundarySupplementaryItem(layoutSize: headerFooterSize, elementKind: Constants.headerElementKind, alignment: .top)
-//            header.pinToVisibleBounds = true
-//
-//            let footer = NSCollectionLayoutBoundarySupplementaryItem(layoutSize: headerFooterSize, elementKind: Constants.footerElementKind, alignment: .bottom)
-//
-//            let section = NSCollectionLayoutSection(group: group)
-//            section.contentInsets = NSDirectionalEdgeInsets(top: 10.0, leading: 10.0, bottom: 10.0, trailing: 10.0)
-//            section.boundarySupplementaryItems = [header, footer]
-//
-//            return section
-//        }
-//
-//        return layout
-//    }
 
     private func createLayout() -> UICollectionViewLayout {
         let layout = UICollectionViewCompositionalLayout { (sectionIndex: Int, layoutEnvironment: NSCollectionLayoutEnvironment) -> NSCollectionLayoutSection? in
@@ -280,13 +222,7 @@ extension CollectionViewController {
 
                 let group = NSCollectionLayoutGroup.vertical(layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(0.475), heightDimension: .absolute(350)), subitem: item, count: 2)
                 return self.configureAndReturnSectionForHeader(with: group)
-            } else if sectionIndex == AppSection.topFreeApps.rawValue {
-                let item = NSCollectionLayoutItem(layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .fractionalHeight(0.33)))
-                item.contentInsets = NSDirectionalEdgeInsets(top: 5.0, leading: 5.0, bottom: 5.0, trailing: 5.0)
-
-                let group = NSCollectionLayoutGroup.vertical(layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(0.475), heightDimension: .absolute(300)), subitem: item, count: 3)
-                return self.configureAndReturnSectionForHeader(with: group)
-            } else if sectionIndex == AppSection.topPaidApps.rawValue {
+            } else if sectionIndex == AppSection.topFreeApps.rawValue || sectionIndex == AppSection.topPaidApps.rawValue {
                 let item = NSCollectionLayoutItem(layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .fractionalHeight(0.33)))
                 item.contentInsets = NSDirectionalEdgeInsets(top: 5.0, leading: 5.0, bottom: 5.0, trailing: 5.0)
 
