@@ -213,7 +213,7 @@ extension CollectionViewController {
                 let item = NSCollectionLayoutItem(layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .fractionalHeight(0.33)))
                 item.contentInsets = NSDirectionalEdgeInsets(top: 5.0, leading: 5.0, bottom: 5.0, trailing: 5.0)
 
-                let group = NSCollectionLayoutGroup.vertical(layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(0.475), heightDimension: .absolute(400)), subitem: item, count: 3)
+                let group = NSCollectionLayoutGroup.vertical(layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(0.475), heightDimension: .absolute(400)), subitems: [item])
 
                 return self.configureAndReturnSectionForHeader(with: group)
             } else if sectionIndex == AppSection.editorsChoice.rawValue {
@@ -244,8 +244,15 @@ extension CollectionViewController {
                 let item = NSCollectionLayoutItem(layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .fractionalHeight(0.33)))
                 item.contentInsets = NSDirectionalEdgeInsets(top: 5.0, leading: 10.0, bottom: 5.0, trailing: 10.0)
 
-                let group = NSCollectionLayoutGroup.vertical(layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(0.49), heightDimension: .absolute(175)), subitem: item, count: 3)
-                let section = self.configureAndReturnSectionForHeader(with: group)
+                let group = NSCollectionLayoutGroup.vertical(layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(0.5), heightDimension: .absolute(175)), subitems: [item])
+
+                let section = NSCollectionLayoutSection(group: group)
+                let headerSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .estimated(44.0))
+
+                let header = NSCollectionLayoutBoundarySupplementaryItem(layoutSize: headerSize, elementKind: Constants.subHeaderElementKind, alignment: .top)
+                section.contentInsets = .zero
+                section.orthogonalScrollingBehavior = .groupPaging
+                section.boundarySupplementaryItems = [header]
 
                 let footerSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .absolute(94.0))
 
