@@ -64,7 +64,7 @@ override func viewDidLayoutSubviews() {
         } else {
             filteredCountries = countries
         }
-        let snapshot = NSDiffableDataSourceSnapshot<Section, Country>()
+        var snapshot = NSDiffableDataSourceSnapshot<Section, Country>()
         snapshot.appendSections([.main])
         snapshot.appendItems(filteredCountries, toSection: .main)
         dataSource.apply(snapshot, animatingDifferences: true)

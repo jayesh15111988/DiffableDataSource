@@ -1,29 +1,33 @@
 //
-//  SupplementaryHeaderView.swift
+//  ListSupplementaryHeader.swift
 //  DiffableDataSource
 //
-//  Created by Jayesh Kawli on 8/6/19.
-//  Copyright © 2019 Jayesh Kawli. All rights reserved.
+//  Created by Jayesh Kawli on 7/3/20.
+//  Copyright © 2020 Jayesh Kawli. All rights reserved.
 //
 
 import UIKit
 
-class SupplementaryHeaderView: UICollectionReusableView {
+class ListSupplementaryHeaderView: UICollectionReusableView {
 
-    static let reuseIdentifier = "supplementary-header-reusable-view"
-    let label: UILabel
+    static let reuseIdentifier = "list-supplementary-header-reusable-view"
+    let label = UILabel()
 
     enum Constants {
         static let padding: CGFloat = 10.0
     }
 
     override init(frame: CGRect) {
-        label = UILabel()
-        super.init(frame: .zero)
-        backgroundColor = .red
+        super.init(frame: frame)
+        backgroundColor = .black
         label.numberOfLines = 0
-        addSubview(label)
+        label.adjustsFontForContentSizeCategory = true
         label.translatesAutoresizingMaskIntoConstraints = false
+        label.backgroundColor = .orange
+        addSubview(label)
+        
+        clipsToBounds = true
+        layer.cornerRadius = 10.0
 
         NSLayoutConstraint.activate([
             label.leadingAnchor.constraint(equalTo: leadingAnchor, constant: Constants.padding),
@@ -37,4 +41,5 @@ class SupplementaryHeaderView: UICollectionReusableView {
         fatalError("init(coder:) has not been implemented")
     }
 }
+
 

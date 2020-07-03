@@ -1,30 +1,33 @@
 //
-//  SupplementaryFooterView.swift
+//  ListSupplementaryFooter.swift
 //  DiffableDataSource
 //
-//  Created by Jayesh Kawli on 8/6/19.
-//  Copyright © 2019 Jayesh Kawli. All rights reserved.
+//  Created by Jayesh Kawli on 7/3/20.
+//  Copyright © 2020 Jayesh Kawli. All rights reserved.
 //
 
 import UIKit
 
-class SupplementaryFooterView: UICollectionReusableView {
+class ListSupplementaryFooterView: UICollectionReusableView {
 
-    static let reuseIdentifier = "supplementary-footer-reusable-view"
+    static let reuseIdentifier = "list-supplementary-footer-reusable-view"
 
-    let label: UILabel
+    let label = UILabel()
 
     enum Constants {
         static let padding: CGFloat = 10.0
     }
 
     override init(frame: CGRect) {
-        label = UILabel()
-        super.init(frame: .zero)
-        backgroundColor = .purple
+        super.init(frame: frame)
+        backgroundColor = .black
+        label.backgroundColor = .gray
         label.numberOfLines = 0
         addSubview(label)
         label.translatesAutoresizingMaskIntoConstraints = false
+            
+        clipsToBounds = true
+        layer.cornerRadius = 10.0
 
         NSLayoutConstraint.activate([
             label.leadingAnchor.constraint(equalTo: leadingAnchor, constant: Constants.padding),
@@ -38,3 +41,4 @@ class SupplementaryFooterView: UICollectionReusableView {
         fatalError("init(coder:) has not been implemented")
     }
 }
+

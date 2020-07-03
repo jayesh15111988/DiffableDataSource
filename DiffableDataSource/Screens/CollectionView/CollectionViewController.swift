@@ -10,104 +10,115 @@ import UIKit
 
 final class CollectionViewController: UIViewController {
 
-    enum Section: Int, CaseIterable {
-        case main
-        case header
-        case body
-        case innerBody
-
-        func columnCount() -> Int {
-            switch self {
-            case .main:
-                return 1
-            case .header:
-                return 3
-            case .body:
-                return 5
-            case .innerBody:
-                return 6
-            }
-        }
-    }
-
     enum Constants {
-         static let badgeElementKind = "badge-element-kind"
-         static let headerElementKind = "header-element-kind"
-         static let footerElementKind = "footer-element-kind"
+        static let listHeaderElementKind = "list-header-element-kind"
+        static let listFooterElementKind = "list-footer-element-kind"
+    }
+    
+    enum Section: Int, CaseIterable {
+        case rows
     }
 
     @IBOutlet weak var collectionView: UICollectionView!
     var dataSource: UICollectionViewDiffableDataSource<Section, Int>!
+    
+    var indicesWithChangedColor: Set<Int> = []
 
-    var sequence: [Int] = []
-    var sequenceHeader: [Int] = []
-    var sequenceBody: [Int] = []
-    var sequenceInnerBody: [Int] = []
+    var sequenceRowData: [Int] = []
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        collectionView.register(BadgeSupplementaryView.self, forSupplementaryViewOfKind: Constants.badgeElementKind, withReuseIdentifier: BadgeSupplementaryView.reuseIdentifier)
-        collectionView.register(SupplementaryHeaderView.self, forSupplementaryViewOfKind: Constants.headerElementKind, withReuseIdentifier: SupplementaryHeaderView.reuseIdentifier)
-        collectionView.register(SupplementaryFooterView.self, forSupplementaryViewOfKind: Constants.footerElementKind, withReuseIdentifier: SupplementaryFooterView.reuseIdentifier)
+        // Registering only for cells
+        collectionView.register(MyCellCollectionViewListCell.self, forCellWithReuseIdentifier: "list-cell")
+        
+        // For List view cells header and footers
+        collectionView.register(ListSupplementaryHeaderView.self, forSupplementaryViewOfKind: Constants.listHeaderElementKind, withReuseIdentifier: ListSupplementaryHeaderView.reuseIdentifier)
+        collectionView.register(ListSupplementaryFooterView.self, forSupplementaryViewOfKind: Constants.listFooterElementKind, withReuseIdentifier: ListSupplementaryFooterView.reuseIdentifier)
 
-        for i in 1...10 {
-            sequence.append(i)
-        }
-
-        for i in 11...30 {
-            sequenceHeader.append(i)
-        }
-
-        for i in 31...50 {
-            sequenceBody.append(i)
-        }
-
-        for i in 51...75 {
-            sequenceInnerBody.append(i)
+        for i in 1...20 {
+            sequenceRowData.append(i)
         }
 
         dataSource = UICollectionViewDiffableDataSource
             <Section, Int>(collectionView: collectionView) {
                 (collectionView: UICollectionView, indexPath: IndexPath,
                 number: Int) -> UICollectionViewCell? in
-                guard let cell = collectionView.dequeueReusableCell(
-                    withReuseIdentifier: "cell", for: indexPath) as? MyCellCollectionViewCell else {
+            
+            
+                let section = Section(rawValue: indexPath.section)
+                
+                if section == .rows {
+                    guard let cell = collectionView.dequeueReusableCell(
+                            withReuseIdentifier: MyCellCollectionViewListCell.reuseIdentifier, for: indexPath) as? MyCellCollectionViewListCell else {
                         fatalError("Cannot create new cell") }
-                cell.headerLabel.text = nil
-                cell.descriptionLabel.text = "\(number)"
-                return cell
+
+                    let changeColorAction = UIContextualAction(style: .normal, title: "Change Color") { [weak self] (_, _, completion) in
+                        guard let strongSelf = self else {
+                            completion(false)
+                            return
+                        }
+                        
+                        strongSelf.changeColor(identifier: number)
+                        completion(true)
+                    }
+                    
+                    cell.accessories = [
+                        .outlineDisclosure(displayed: .always, options: .init(style: .automatic), actionHandler: {
+                            print("Handling Disclosure Tap")
+                        }),
+                        .delete(displayed: .always, actionHandler: {
+                            print("Handling Delete action")
+                        })
+                    ]
+                    
+                    changeColorAction.backgroundColor = .black
+                    cell.leadingSwipeActionsConfiguration = UISwipeActionsConfiguration(actions: [changeColorAction])
+                    cell.label.text = "\(number)"
+                    return cell
+                } else {
+                    // For future use when we insert one more section other than `Rows`
+                    fatalError("Please implement this block of code while adding another section")
+                }
         }
 
-        dataSource.supplementaryViewProvider = { [weak self] (collectionView: UICollectionView, kind: String, indexPath: IndexPath) -> UICollectionReusableView? in
-
-            if kind == Constants.headerElementKind {
-                if let headerView = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: SupplementaryHeaderView.reuseIdentifier, for: indexPath) as? SupplementaryHeaderView {
-                    headerView.label.text = "Header\nHeader\nHeader\nHeader"
+        dataSource.supplementaryViewProvider = { (collectionView: UICollectionView, kind: String, indexPath: IndexPath) -> UICollectionReusableView? in
+            
+            let section = Section(rawValue: indexPath.section)
+            
+            if kind == UICollectionView.elementKindSectionHeader, section == .rows  {
+                if let headerView = collectionView.dequeueReusableSupplementaryView(ofKind: Constants.listHeaderElementKind, withReuseIdentifier: ListSupplementaryHeaderView.reuseIdentifier, for: indexPath) as? ListSupplementaryHeaderView {
+                    headerView.label.text = "List Header\nHeader\nHeader\nHeader"
                     return headerView
                 }
             }
-
-            if kind == Constants.footerElementKind {
-                if let footerView = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: SupplementaryFooterView.reuseIdentifier, for: indexPath) as? SupplementaryFooterView {
-                    footerView.label.text = "Footer\nFooter\nFooter\nFooter"
+            
+            if kind == UICollectionView.elementKindSectionFooter, section == .rows {
+                if let footerView = collectionView.dequeueReusableSupplementaryView(ofKind: Constants.listFooterElementKind, withReuseIdentifier: ListSupplementaryFooterView.reuseIdentifier, for: indexPath) as? ListSupplementaryFooterView {
+                    footerView.label.text = "List Footer\nFooter\nFooter\nFooter"
                     return footerView
                 }
             }
 
-            guard let strongSelf = self, let sequence = strongSelf.dataSource.itemIdentifier(for: indexPath) else { return nil }
-            if let badgeView = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: BadgeSupplementaryView.reuseIdentifier, for: indexPath) as? BadgeSupplementaryView {
-
-                let badgeCount = sequence
-                badgeView.label.text = "\(badgeCount)"
-                badgeView.isHidden = false
-                return badgeView
-            }
-
+            // If you have an additional header-footer type for another section, please implement it here. If your section is registered to have header or footer and no such value is returned from this method, an application will crash
             fatalError("Failed to get expected supplementary reusable view from collection view. Stopping the program execution")
         }
 
         collectionView.collectionViewLayout = createLayout()
+    }
+    
+    private func changeColor(identifier: Int) {
+        if let indexPath = dataSource.indexPath(for: identifier) {
+            if let cell = self.collectionView.cellForItem(at: indexPath) as? MyCellCollectionViewListCell {
+                if indicesWithChangedColor.contains(identifier) {
+                    indicesWithChangedColor.remove(identifier)
+                    cell.label.backgroundColor = .white
+                } else {
+                    indicesWithChangedColor.insert(identifier)
+                    cell.label.backgroundColor = .red
+                }
+            }
+        }
     }
 
     override func viewDidLayoutSubviews() {
@@ -116,12 +127,9 @@ final class CollectionViewController: UIViewController {
     }
 
     func loadData() {
-        let snapshot = NSDiffableDataSourceSnapshot<Section, Int>()
-        snapshot.appendSections([.main, .header, .body, .innerBody])
-        snapshot.appendItems(sequence, toSection: .main)
-        snapshot.appendItems(sequenceHeader, toSection: .header)
-        snapshot.appendItems(sequenceBody, toSection: .body)
-        snapshot.appendItems(sequenceInnerBody, toSection: .innerBody)
+        var snapshot = NSDiffableDataSourceSnapshot<Section, Int>()
+        snapshot.appendSections([.rows])
+        snapshot.appendItems(sequenceRowData, toSection: .rows)
         dataSource.apply(snapshot, animatingDifferences: true)
     }
 }
@@ -137,36 +145,26 @@ extension CollectionViewController {
 
     private func createLayout() -> UICollectionViewLayout {
         let layout = UICollectionViewCompositionalLayout { (sectionIndex: Int, layoutEnvironment: NSCollectionLayoutEnvironment) -> NSCollectionLayoutSection? in
-
-            guard let sectionKind = Section(rawValue: sectionIndex) else { return nil }
-            let columns = sectionKind.columnCount()
-
-            let badgeAnchor = NSCollectionLayoutAnchor(edges: [.top, .trailing], fractionalOffset: CGPoint(x: 0.3, y: -0.3))
-            let badgeSize = NSCollectionLayoutSize(widthDimension: .absolute(20.0), heightDimension: .absolute(20.0))
-            let badge = NSCollectionLayoutSupplementaryItem(layoutSize: badgeSize, elementKind: Constants.badgeElementKind, containerAnchor: badgeAnchor)
-
-            let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .fractionalHeight(1.0))
-            let item = NSCollectionLayoutItem(layoutSize: itemSize, supplementaryItems: [badge])
-            item.contentInsets = NSDirectionalEdgeInsets(top: 2.0, leading: 2.0, bottom: 2.0, trailing: 2.0)
-
-            let groupHeight: NSCollectionLayoutDimension = columns == 1 ? .absolute(74) : .fractionalWidth(0.2)
-            let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: groupHeight)
-            let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitem: item, count: columns)
-
-            let headerFooterSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .estimated(44.0))
-
-            let header = NSCollectionLayoutBoundarySupplementaryItem(layoutSize: headerFooterSize, elementKind: Constants.headerElementKind, alignment: .top)
-            header.pinToVisibleBounds = true
-            header.zIndex = 2
-
-            let footer = NSCollectionLayoutBoundarySupplementaryItem(layoutSize: headerFooterSize, elementKind: Constants.footerElementKind, alignment: .bottom)
-
-            let section = NSCollectionLayoutSection(group: group)
-            section.boundarySupplementaryItems = [header, footer]
-            section.contentInsets = NSDirectionalEdgeInsets(top: 10.0, leading: 10.0, bottom: 10.0, trailing: 10.0)
+            
+            let section = self.customRowLayout(layoutEnvironment: layoutEnvironment)
 
             return section
         }
         return layout
+    }
+    
+    private func customRowLayout(layoutEnvironment: NSCollectionLayoutEnvironment) -> NSCollectionLayoutSection? {
+        var configuration = UICollectionLayoutListConfiguration(appearance: .insetGrouped)
+        configuration.headerMode = .supplementary
+        configuration.footerMode = .supplementary
+        let section = NSCollectionLayoutSection.list(using: configuration, layoutEnvironment: layoutEnvironment)
+        return section
+        
+        // MARK: Alternate way to assign header and footers to given list. This is better way of handling dynamic content in Header and Footer. It was observed that if we use built-in header and footer using lines of code 161-162, app will throw warnings for breaking constraints
+//            let headerFooterSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .estimated(44.0))
+//
+//            let header = NSCollectionLayoutBoundarySupplementaryItem(layoutSize: headerFooterSize, elementKind: Constants.listHeaderElementKind, alignment: .top)
+//            let footer = NSCollectionLayoutBoundarySupplementaryItem(layoutSize: headerFooterSize, elementKind: Constants.footerElementKind, alignment: .bottom)
+//            section.boundarySupplementaryItems = [header]
     }
 }
