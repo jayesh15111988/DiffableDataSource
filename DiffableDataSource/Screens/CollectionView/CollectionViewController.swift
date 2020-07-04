@@ -44,56 +44,46 @@ final class CollectionViewController: UIViewController {
             <Section, Int>(collectionView: collectionView) {
                 (collectionView: UICollectionView, indexPath: IndexPath,
                 number: Int) -> UICollectionViewCell? in
-            
-            
-                let section = Section(rawValue: indexPath.section)
-                
-                if section == .rows {
-                    guard let cell = collectionView.dequeueReusableCell(
-                            withReuseIdentifier: MyCellCollectionViewListCell.reuseIdentifier, for: indexPath) as? MyCellCollectionViewListCell else {
-                        fatalError("Cannot create new cell") }
 
-                    let changeColorAction = UIContextualAction(style: .normal, title: "Change Color") { [weak self] (_, _, completion) in
-                        guard let strongSelf = self else {
-                            completion(false)
-                            return
-                        }
-                        
-                        strongSelf.changeColor(identifier: number)
-                        completion(true)
+                guard let cell = collectionView.dequeueReusableCell(
+                        withReuseIdentifier: MyCellCollectionViewListCell.reuseIdentifier, for: indexPath) as? MyCellCollectionViewListCell else {
+                    fatalError("Cannot create new cell") }
+
+                let changeColorAction = UIContextualAction(style: .normal, title: "Change Color") { [weak self] (_, _, completion) in
+                    guard let strongSelf = self else {
+                        completion(false)
+                        return
                     }
                     
-                    cell.accessories = [
-                        .outlineDisclosure(displayed: .always, options: .init(style: .automatic), actionHandler: {
-                            print("Handling Disclosure Tap")
-                        }),
-                        .delete(displayed: .always, actionHandler: {
-                            print("Handling Delete action")
-                        })
-                    ]
-                    
-                    changeColorAction.backgroundColor = .black
-                    cell.leadingSwipeActionsConfiguration = UISwipeActionsConfiguration(actions: [changeColorAction])
-                    cell.label.text = "\(number)"
-                    return cell
-                } else {
-                    // For future use when we insert one more section other than `Rows`
-                    fatalError("Please implement this block of code while adding another section")
+                    strongSelf.changeColor(identifier: number)
+                    completion(true)
                 }
+
+                cell.accessories = [
+                    .outlineDisclosure(displayed: .always, options: .init(style: .automatic), actionHandler: {
+                        print("Handling Disclosure Tap")
+                    }),
+                    .delete(displayed: .always, actionHandler: {
+                        print("Handling Delete action")
+                    })
+                ]
+
+                changeColorAction.backgroundColor = .black
+                cell.leadingSwipeActionsConfiguration = UISwipeActionsConfiguration(actions: [changeColorAction])
+                cell.label.text = "\(number)"
+                return cell
         }
 
         dataSource.supplementaryViewProvider = { (collectionView: UICollectionView, kind: String, indexPath: IndexPath) -> UICollectionReusableView? in
             
-            let section = Section(rawValue: indexPath.section)
-            
-            if kind == UICollectionView.elementKindSectionHeader, section == .rows  {
+            if kind == UICollectionView.elementKindSectionHeader {
                 if let headerView = collectionView.dequeueReusableSupplementaryView(ofKind: Constants.listHeaderElementKind, withReuseIdentifier: ListSupplementaryHeaderView.reuseIdentifier, for: indexPath) as? ListSupplementaryHeaderView {
                     headerView.label.text = "List Header\nHeader\nHeader\nHeader"
                     return headerView
                 }
             }
             
-            if kind == UICollectionView.elementKindSectionFooter, section == .rows {
+            if kind == UICollectionView.elementKindSectionFooter {
                 if let footerView = collectionView.dequeueReusableSupplementaryView(ofKind: Constants.listFooterElementKind, withReuseIdentifier: ListSupplementaryFooterView.reuseIdentifier, for: indexPath) as? ListSupplementaryFooterView {
                     footerView.label.text = "List Footer\nFooter\nFooter\nFooter"
                     return footerView
