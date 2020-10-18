@@ -26,6 +26,15 @@ final class CollectionViewController: UIViewController {
 
     var sequenceRowData: [Int] = []
 
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        print("sdsd")
+        if traitCollection.preferredContentSizeCategory < .accessibilityMedium {
+            print("Small")
+        } else {
+            print("Large")
+        }
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -49,16 +58,6 @@ final class CollectionViewController: UIViewController {
                         withReuseIdentifier: MyCellCollectionViewListCell.reuseIdentifier, for: indexPath) as? MyCellCollectionViewListCell else {
                     fatalError("Cannot create new cell") }
 
-                let changeColorAction = UIContextualAction(style: .normal, title: "Change Color") { [weak self] (_, _, completion) in
-                    guard let strongSelf = self else {
-                        completion(false)
-                        return
-                    }
-                    
-                    strongSelf.changeColor(identifier: number)
-                    completion(true)
-                }
-
                 cell.accessories = [
                     .outlineDisclosure(displayed: .always, options: .init(style: .automatic), actionHandler: {
                         print("Handling Disclosure Tap")
@@ -67,9 +66,6 @@ final class CollectionViewController: UIViewController {
                         print("Handling Delete action")
                     })
                 ]
-
-                changeColorAction.backgroundColor = .black
-                cell.leadingSwipeActionsConfiguration = UISwipeActionsConfiguration(actions: [changeColorAction])
                 cell.label.text = "\(number)"
                 return cell
         }
@@ -96,23 +92,13 @@ final class CollectionViewController: UIViewController {
 
         collectionView.collectionViewLayout = createLayout()
     }
-    
-    private func changeColor(identifier: Int) {
-        if let indexPath = dataSource.indexPath(for: identifier) {
-            if let cell = self.collectionView.cellForItem(at: indexPath) as? MyCellCollectionViewListCell {
-                if indicesWithChangedColor.contains(identifier) {
-                    indicesWithChangedColor.remove(identifier)
-                    cell.label.backgroundColor = .white
-                } else {
-                    indicesWithChangedColor.insert(identifier)
-                    cell.label.backgroundColor = .red
-                }
-            }
-        }
-    }
 
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
+        
+        let content = UIListContentConfiguration.cell()
+        let contentView = UIListContentView(configuration: content)
+        contentView.configuration = UIListContentConfiguration.sidebarCell()
         loadData()
     }
 
@@ -137,7 +123,7 @@ extension CollectionViewController {
         let layout = UICollectionViewCompositionalLayout { (sectionIndex: Int, layoutEnvironment: NSCollectionLayoutEnvironment) -> NSCollectionLayoutSection? in
             
             let section = self.customRowLayout(layoutEnvironment: layoutEnvironment)
-
+            print("Section index %d", sectionIndex)
             return section
         }
         return layout
@@ -147,6 +133,25 @@ extension CollectionViewController {
         var configuration = UICollectionLayoutListConfiguration(appearance: .insetGrouped)
         configuration.headerMode = .supplementary
         configuration.footerMode = .supplementary
+
+        configuration.leadingSwipeActionsConfigurationProvider = { (indexPath) -> UISwipeActionsConfiguration in
+                
+            let changeColorAction = UIContextualAction(style: .normal, title: "Change Color") { [weak self] (_, _, completion) in
+                guard let strongSelf = self else {
+                    completion(false)
+                    return
+                }
+                
+                if let number = strongSelf.dataSource.itemIdentifier(for: indexPath) {
+                    strongSelf.changeColor(indexPath: indexPath, identifier: number)
+                    completion(true)
+                }
+                completion(false)
+            }
+            changeColorAction.backgroundColor = .black
+            return UISwipeActionsConfiguration(actions: [changeColorAction])
+        }
+        
         let section = NSCollectionLayoutSection.list(using: configuration, layoutEnvironment: layoutEnvironment)
         return section
         
@@ -156,5 +161,17 @@ extension CollectionViewController {
 //            let header = NSCollectionLayoutBoundarySupplementaryItem(layoutSize: headerFooterSize, elementKind: Constants.listHeaderElementKind, alignment: .top)
 //            let footer = NSCollectionLayoutBoundarySupplementaryItem(layoutSize: headerFooterSize, elementKind: Constants.footerElementKind, alignment: .bottom)
 //            section.boundarySupplementaryItems = [header]
+    }
+    
+    private func changeColor(indexPath: IndexPath, identifier: Int) {
+        if let cell = self.collectionView.cellForItem(at: indexPath) as? MyCellCollectionViewListCell {
+            if indicesWithChangedColor.contains(identifier) {
+                indicesWithChangedColor.remove(identifier)
+                cell.label.backgroundColor = .white
+            } else {
+                indicesWithChangedColor.insert(identifier)
+                cell.label.backgroundColor = .red
+            }
+        }
     }
 }
