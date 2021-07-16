@@ -11,8 +11,8 @@ import UIKit
 final class CollectionViewController: UIViewController {
 
     enum Constants {
-        static let listHeaderElementKind = "list-header-element-kind"
-        static let listFooterElementKind = "list-footer-element-kind"
+        static let listHeaderElementKind = UICollectionView.elementKindSectionHeader
+        static let listFooterElementKind = UICollectionView.elementKindSectionFooter
     }
     
     enum Section: Int, CaseIterable {
@@ -42,6 +42,7 @@ final class CollectionViewController: UIViewController {
         collectionView.register(MyCellCollectionViewListCell.self, forCellWithReuseIdentifier: "list-cell")
         
         // For List view cells header and footers
+        //UICollectionView.elementKindSectionHeader
         collectionView.register(ListSupplementaryHeaderView.self, forSupplementaryViewOfKind: Constants.listHeaderElementKind, withReuseIdentifier: ListSupplementaryHeaderView.reuseIdentifier)
         collectionView.register(ListSupplementaryFooterView.self, forSupplementaryViewOfKind: Constants.listFooterElementKind, withReuseIdentifier: ListSupplementaryFooterView.reuseIdentifier)
 
