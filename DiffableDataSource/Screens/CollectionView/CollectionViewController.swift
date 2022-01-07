@@ -8,6 +8,11 @@
 
 import UIKit
 
+struct Item {
+    let name: String
+    let image: UIImage
+}
+
 final class CollectionViewController: UIViewController {
 
     enum Constants {
@@ -60,14 +65,27 @@ final class CollectionViewController: UIViewController {
                     fatalError("Cannot create new cell") }
 
                 cell.accessories = [
-                    .outlineDisclosure(displayed: .always, options: .init(style: .automatic), actionHandler: {
+                    .outlineDisclosure(displayed: .whenEditing, options: .init(style: .automatic), actionHandler: {
                         print("Handling Disclosure Tap")
+                        print("How event")
                     }),
-                    .delete(displayed: .always, actionHandler: {
+                    .delete(displayed: .whenNotEditing, actionHandler: {
                         print("Handling Delete action")
                     })
                 ]
-                cell.label.text = "\(number)"
+                // This is done
+                var x = 100
+                var y = 200
+                //cell.label.text = "\(number)"
+                
+//                var content = cell.defaultContentConfiguration()
+//
+//                content.text = String(number)
+//                content.image = UIImage(systemName: "star")
+//                cell.contentConfiguration = content
+                
+                cell.item = Item(name: String(number), image: UIImage(systemName: "star")!)
+                
                 return cell
         }
 
