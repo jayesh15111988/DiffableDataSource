@@ -46,7 +46,11 @@ final class TableViewController: UIViewController {
                 (tableView: UITableView, indexPath: IndexPath,
                 country: Country) -> UITableViewCell? in
                 let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
-                cell.textLabel?.text = country.name
+                var content = cell.defaultContentConfiguration()
+                content.text = country.name
+                content.image = UIImage(systemName: "star")
+                content.secondaryText = country.name
+                cell.contentConfiguration = content
                 return cell
         }
         dataSource.defaultRowAnimation = .fade
